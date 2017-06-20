@@ -16,13 +16,14 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     ListView list;
-    Button butPlay, butStop;
+    Button butPlay, butStop,butPause;
     TextView textMusic;
     ProgressBar progress;
-    String[] musics={"dean_admusic","dean_limbo_second","dean_outro"};
-    int[] musicResIds={R.raw.dean_admusic,R.raw.dean_limbo_second,R.raw.dean_outro};
+    String[] musics={"dean_admusic","dean_limbo_second","iu_palette"};
+    int[] musicResIds={R.raw.dean_admusic,R.raw.dean_limbo_second,R.raw.iu_palette};
     int selectedMusicId;
     MediaPlayer mediaPlayer;
+    boolean selectePauseButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         list=(ListView)findViewById(R.id.list_music);
         butPlay=(Button)findViewById(R.id.but_play);
         butStop=(Button)findViewById(R.id.but_stop);
+        butPause=(Button)findViewById(R.id.but_pause);
         textMusic=(TextView)findViewById(R.id.text_music);
         progress=(ProgressBar)findViewById(R.id.progress_music);
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_single_choice,musics);
@@ -40,23 +42,45 @@ public class MainActivity extends AppCompatActivity {
         selectedMusicId=musicResIds[0];
         mediaPlayer=MediaPlayer.create(this,selectedMusicId);
 
+
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int i, long id) {
+                selectePauseButton=false;
+                mediaPlayer.stop();
                 selectedMusicId=musicResIds[i];
+                progress.setVisibility(View.INVISIBLE);
             }
         });
 
         butPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(selectePauseButton) {
+                    selectePauseButton=false;
+                }
+                else {
+                    mediaPlayer = MediaPlayer.create(MainActivity.this, selectedMusicId);
+                }
                 mediaPlayer.start();
+                progress.setVisibility(View.VISIBLE);
+            }
+        });
+        butPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectePauseButton=true;
+                mediaPlayer.pause();
+                progress.setVisibility(View.INVISIBLE);
+
             }
         });
         butStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selectePauseButton=false;
                 mediaPlayer.stop();
+                progress.setVisibility(View.INVISIBLE);
             }
         });
     }
